@@ -1,94 +1,141 @@
-# C++ Sudoku Solver With Different Techniques
+# Sudoku Solver - Performance Optimization Study 🧩⚡
 
-This project uses a variety of optimization techniques to solve a simple 9x9 sudoku puzzle.
+> Exploring and benchmarking various algorithmic optimization techniques for solving 9×9 Sudoku puzzles
 
-## How to Run
+A personal project comparing the performance of different constraint satisfaction and search algorithms.
 
-Download and use the make commands to run, it will output the solved sudoku puzzle and the time (in milliseconds) the algorithm took to solve it; the program outputs "No solution found!" if the sudoku puzzle is unvalid.
+## 📋 Overview
 
-General version:
+This project implements multiple approaches to solving Sudoku puzzles, from naive backtracking to advanced constraint satisfaction algorithms. Each version explores different optimization strategies, providing insights into their real-world performance characteristics on a classic computational problem.
 
-```
-make v{version number}
-./v{version number}
-```
+### Key Features
 
-Specific example:
+- 🔄 **Multiple Algorithm Implementations** - 8 different solving approaches
+- ⚡ **Performance Benchmarking** - Precise timing measurements in milliseconds
+- 📊 **Comparative Analysis** - Side-by-side performance comparisons
+- 🎯 **Optimization Techniques** - Backtracking, heuristics, constraint propagation, and more
+- 🛠️ **Easy Testing** - Simple Makefile commands to run each version
 
-```
-make v1
-./v1
-```
+## 🛠️ Tech Stack
 
-Remove all compiled files with:
+### Implementation (98.7% C++, 1.3% Makefile)
+- **C++** - High-performance implementation
+- **Makefile** - Build automation and version management
+- Standard Template Library (STL)
+- Multithreading support
 
-```
-make clean
-```
+## 🚀 Getting Started
 
-## Results
+### Prerequisites
 
-Tested on Mabook Air M1 2020.
+- C++ compiler (g++ recommended)
+- Make utility
+- Unix-like environment (Linux, macOS, WSL)
 
-On average, the version using backtracking and lists (v2) was the fastest closely followed by version using only the LCV/MRV heuristics (v4), and the version using the AC-3 algorithm (v5). The slowest was the version using multithreading (v7) by a wide margin.
+### Installation & Usage
 
-Overall, I'm surprised at these results - I wasn't expecting v2 to outperform the version using bitmasks (v3) since bitmasks seemed like a strictly better version of v2 but it seems making the masking variables took a bit too long. I also didn't expect the AC-3 version to get worse when we add backtracking in, I suppose naive backtracking is just that bad.
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/Jared-Rost/sudoku_solver.git
+   cd sudoku_solver
+   ```
 
-Multithreading was horrendously slow - I thought waiting for all those threads to finish would take a while but not this bad. I suppose this problem is too small to be worth all the effort of splitting it into pieces and waiting for each thread to end before continuing.
+2. **Build and Run a Specific Version**
+   ```bash
+   make v{version_number}
+   ./v{version_number}
+   ```
 
-## Versions
+   **Example:**
+   ```bash
+   make v2
+   ./v2
+   ```
 
-### v1
+3. **Clean Build Artifacts**
+   ```bash
+   make clean
+   ```
 
-Naive backtracking using unoptimized data structures.
+### Output
 
-Ran in ~0.60 milliseconds.
+Each solver outputs:
+- The solved Sudoku puzzle
+- Execution time in milliseconds
+- "No solution found!" if the puzzle is unsolvable
 
-### v2
+## 📊 Performance Results
 
-Uses simple backtracking and lists to store which numbers are available in each cell instead of checking to see if column/row/3x3 grid is valid after inserting a new number.
+**Test Environment:** MacBook Air M1 2020
 
-Ran in ~0.015 milliseconds.
+| Version | Algorithm | Average Time | Performance Rank |
+|---------|-----------|--------------|------------------|
+| v2 | Backtracking + Lists | **~0.015 ms** | 🥇 Fastest |
+| v4 | LCV/MRV Heuristics | ~0.020 ms | 🥈 2nd |
+| v5 | AC-3 Algorithm | ~0.230 ms | 🥉 3rd |
+| v3 | Backtracking + Bitmasks | ~0.050 ms | Fast |
+| v1 | Naive Backtracking | ~0.600 ms | Baseline |
+| v6 | AC-3 + Backtracking | ~1.000 ms | Moderate |
+| v8 | Iterative Deepening | ~2.000 ms | Moderate |
+| v7 | Multithreading | ~150.00 ms | Slowest |
 
-### v3
+### Key Insights
 
-Uses simple backtracking and bitmasks to keep track of which numbers are available in each row/column/3x3 grid.
+**Surprising Results:**
+- **Lists beat Bitmasks** - v2 (lists) outperformed v3 (bitmasks), despite bitmasks theoretically being more efficient. The overhead of mask operations appears to outweigh the benefits for this problem size.
 
-Ran in ~0.05 milliseconds.
+- **Multithreading Overhead** - v7 was dramatically slower due to thread management overhead. Sudoku solving is too small and fast for multithreading to provide benefits—the coordination cost exceeds the computation savings.
 
-### v4
+- **Heuristics Win** - v4's LCV (Least Constraining Value) and MRV (Minimum Remaining Values) heuristics provided excellent performance with minimal complexity.
 
-Uses heuristics like Least Constraining Value (LCV) and Minimum Remaining Values (MRV).
+## 🧠 Algorithm Versions
 
-Ran in ~0.02 milliseconds.
+### v1 - Naive Backtracking
+Basic depth-first search with backtracking. Validates constraints after each insertion.
+- **Time:** ~0.60 ms
+- **Technique:** Brute force exploration
 
-### v5
+### v2 - Backtracking + Lists ⭐ Fastest
+Maintains lists of available values for each cell, eliminating redundant constraint checks.
+- **Time:** ~0.015 ms
+- **Technique:** Constraint tracking with lists
 
-Uses the AC-3 algorithm.
+### v3 - Backtracking + Bitmasks
+Uses bit manipulation to track available values in rows, columns, and 3×3 grids.
+- **Time:** ~0.05 ms
+- **Technique:** Bitwise operations
 
-Ran in ~0.23 milliseconds.
+### v4 - LCV/MRV Heuristics
+Implements intelligent variable and value ordering heuristics.
+- **Time:** ~0.02 ms
+- **Technique:** Least Constraining Value, Minimum Remaining Values
 
-### v6
+### v5 - AC-3 Algorithm
+Arc Consistency algorithm for constraint propagation.
+- **Time:** ~0.23 ms
+- **Technique:** Constraint satisfaction preprocessing
 
-Uses the AC-3 algorithm and backtracking.
+### v6 - AC-3 + Backtracking
+Combines constraint propagation with search.
+- **Time:** ~1.00 ms
+- **Technique:** Hybrid approach
 
-Ran in ~1.00 milliseconds.
+### v7 - Multithreading
+Parallelizes the search across multiple threads.
+- **Time:** ~150.00 ms ⚠️
+- **Technique:** Parallel computation (ineffective for small problems)
 
-### v7
+### v8 - Iterative Deepening
+Combines Breadth-First and Depth-First Search strategies.
+- **Time:** ~2.00 ms
+- **Technique:** IDDFS (Iterative Deepening DFS)
 
-Uses multithreading to divide the work among multiple threads.
+## 🔮 Future Enhancements
 
-Ran in ~150.00 milliseconds.
-
-### v8
-
-Uses Iterative Deepening to combine Breadth First Search (BFS) and Depth First Search (DFS).
-
-Ran in ~2.00 milliseconds.
-
-## Future Updates (To Do)
-
-- Make central program that runs/tests each version of the algorithm based on user input
-- Make sudoku puzzle generator with adjustable parameters (like number of starting values)
-- Make sudoku verifier to ensure outputs are correct
-- Combine AC-3 preprocessing with the list version in v2
+- [ ] Central program to run/test all versions with user selection
+- [ ] Sudoku puzzle generator with difficulty parameters
+- [ ] Puzzle validator to verify solution correctness
+- [ ] Combine AC-3 preprocessing with v2's list approach
+- [ ] Benchmarking suite with various difficulty levels
+- [ ] Visualization of solving process
+- [ ] Support for larger puzzle sizes (16×16, 25×25)
